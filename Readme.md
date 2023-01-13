@@ -11,3 +11,7 @@ dotnet workload install wasm-tools
 ```
 
 The main [Kiota project](https://github.com/microsoft/kiota) is supposed to be available as a sibling folder.
+
+```bash
+dotnet build --configuration Release
+```

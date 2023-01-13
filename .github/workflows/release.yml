@@ -39,7 +39,7 @@ jobs:
         run: dotnet workload install wasm-tools
       - name: Publish
         working-directory: ./client-gen
-        run: dotnet publish
+        run: dotnet build --configuration Release
       - name: Compress
         working-directory: ./client-gen
         run: |
