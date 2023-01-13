@@ -91,7 +91,7 @@ public partial class KiotaClientGen
         {
             if (e.Message.Contains("Lock"))
             {
-                // problems writing the final lock file, ignoring
+                Console.WriteLine("Problems during the Lock file write, ignoring", e);
             }
             else
             {
