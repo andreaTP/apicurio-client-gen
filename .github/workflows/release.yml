@@ -11,6 +11,11 @@ on:
         required: true
         default: 'main'
 
+concurrency:
+  # Only run once for latest commit per ref and cancel other (previous) runs.
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   release:
     runs-on: ubuntu-20.04
