@@ -17,6 +17,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          path: client-gen
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 1
+          path: kiota
+          repository: microsoft/kiota
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
@@ -24,9 +33,10 @@ jobs:
       - name: Install WASM tools
         run: dotnet workload install wasm-tools
       - name: Publish
+        working-directory: ./client-gen
         run: dotnet publish
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.event.inputs.release-version }}
-          files: dist
+          files: ./client-gen/dist

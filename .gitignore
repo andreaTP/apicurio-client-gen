@@ -1,4 +1,5 @@
 bin
 obj
 dist
+kiota
 node_modules
