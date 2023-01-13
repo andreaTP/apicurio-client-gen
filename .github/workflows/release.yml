@@ -35,8 +35,15 @@ jobs:
       - name: Publish
         working-directory: ./client-gen
         run: dotnet publish
+      - name: Compress
+        working-directory: ./client-gen
+        run: |
+          tar -zcvf dist.tar.gz ./dist
+          zip -r dist.zip ./dist
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ github.event.inputs.release-version }}
-          files: ./client-gen/dist/*
+          files: |
+            ./client-gen/dist.tar.gz
+            ./client-gen/dist.zip
