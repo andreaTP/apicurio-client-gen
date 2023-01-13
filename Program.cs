@@ -44,7 +44,8 @@ public partial class KiotaClientGen
         if (isJson(spec))
         {
             filename += "json";
-        } else
+        }
+        else
         {
             filename += "yaml";
         }
@@ -81,9 +82,22 @@ public partial class KiotaClientGen
             ClearCache = true,
         };
 
-        var builder = new KiotaBuilder(consoleLogger, generationConfiguration, new HttpClient());
-
-        var result = await builder.GenerateClientAsync(token).ConfigureAwait(false);
+        try
+        {
+            var builder = new KiotaBuilder(consoleLogger, generationConfiguration, new HttpClient());
+            var result = await builder.GenerateClientAsync(token).ConfigureAwait(false);
+        }
+        catch (Exception e)
+        {
+            if (e.Message.Contains("Lock"))
+            {
+                // problems writing the final lock file, ignoring
+            }
+            else
+            {
+                throw;
+            }
+        }
 
         var zipFilePath = Path.Combine(Path.GetTempPath(), "kiota", "clients", hashedUrl, "client.zip");
         if (File.Exists(zipFilePath))
@@ -98,14 +112,15 @@ public partial class KiotaClientGen
         return base64Content;
     }
 
-    private static bool isJson(string str) {
+    private static bool isJson(string str)
+    {
         try
         {
             JsonValue.Parse(str);
             return true;
         }
         catch (Exception)
-    {
+        {
             return false;
         }
     }
