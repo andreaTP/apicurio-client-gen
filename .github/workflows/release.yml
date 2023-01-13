@@ -21,6 +21,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
+      - name: Install WASM tools
+        run: dotnet workload install wasm-tools
       - name: Publish
         run: dotnet publish
       - name: Release
