@@ -12,6 +12,7 @@ using System.IO.Compression;
 using System.Runtime.Versioning;
 using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 Console.WriteLine("Hello browser!");
 
@@ -24,7 +25,7 @@ public partial class KiotaClientGen
     private static readonly CancellationToken token = source.Token;
 
     [JSExport]
-    internal async static Task<string> Generate(string spec, string language, string clientClassName, string namespaceName)
+    internal async static Task<string> Generate(string spec, string language, string clientClassName, string namespaceName, string includePatterns, string excludePatterns)
     {
         Console.WriteLine($"Starting to Generate with parameters: {language}, {clientClassName}, {namespaceName}");
 
@@ -66,8 +67,8 @@ public partial class KiotaClientGen
         var generationConfiguration = new GenerationConfiguration
         {
             OpenAPIFilePath = OpenapiFile,
-            IncludePatterns = defaultConfiguration.IncludePatterns,
-            ExcludePatterns = defaultConfiguration.ExcludePatterns,
+            IncludePatterns = includePatterns?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(static x => x.Trim()).ToHashSet(),
+            ExcludePatterns = excludePatterns?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(static x => x.Trim()).ToHashSet(),
             Language = parsedLanguage,
             OutputPath = OutputPath,
             ClientClassName = clientClassName,
@@ -129,7 +130,7 @@ public partial class KiotaClientGen
 
 class ConsoleLogger : ILogger<KiotaBuilder>
 {
-    IDisposable? ILogger.BeginScope<TState>(TState state)
+    IDisposable ILogger.BeginScope<TState>(TState state)
     {
         return new DummyDisposable();
     }
@@ -139,7 +140,7 @@ class ConsoleLogger : ILogger<KiotaBuilder>
         return true;
     }
 
-    void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
+    void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
         Console.WriteLine(formatter(state, exception));
     }
