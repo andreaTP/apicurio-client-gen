@@ -20,97 +20,105 @@ Console.WriteLine("Hello browser!");
 public partial class KiotaClientGen
 {
     private static readonly ThreadLocal<HashAlgorithm> HashAlgorithm = new(() => SHA256.Create());
-    private static readonly ILogger<KiotaBuilder> consoleLogger = new ConsoleLogger();
     private static readonly CancellationTokenSource source = new CancellationTokenSource();
     private static readonly CancellationToken token = source.Token;
 
     [JSExport]
     internal async static Task<string> Generate(string spec, string language, string clientClassName, string namespaceName, string includePatterns, string excludePatterns)
     {
-        Console.WriteLine($"Starting to Generate with parameters: {language}, {clientClassName}, {namespaceName}");
+        var cl = new ConsoleLogger();
+        ILogger<KiotaBuilder> consoleLogger = cl;
 
-        var defaultConfiguration = new GenerationConfiguration();
+        // try
+        // {
+            Console.WriteLine($"Starting to Generate with parameters: {language}, {clientClassName}, {namespaceName}");
 
-        var hashedUrl = BitConverter.ToString(HashAlgorithm.Value!.ComputeHash(Encoding.UTF8.GetBytes(spec))).Replace("-", string.Empty);
-        string OutputPath = Path.Combine(Path.GetTempPath(), "kiota", "generation", hashedUrl);
+            var defaultConfiguration = new GenerationConfiguration();
 
-        if (File.Exists(OutputPath))
-        {
-            Console.WriteLine("Deleting OutputPath");
-            File.Delete(OutputPath);
-        }
-        Directory.CreateDirectory(OutputPath);
+            var hashedUrl = BitConverter.ToString(HashAlgorithm.Value!.ComputeHash(Encoding.UTF8.GetBytes(spec))).Replace("-", string.Empty);
+            string OutputPath = Path.Combine(Path.GetTempPath(), "kiota", "generation", hashedUrl);
 
-        string filename = "openapi.";
-        if (isJson(spec))
-        {
-            filename += "json";
-        }
-        else
-        {
-            filename += "yaml";
-        }
-
-        string OpenapiFile = Path.Combine(Path.GetTempPath(), filename);
-        if (File.Exists(OpenapiFile))
-        {
-            Console.WriteLine("Deleting OpenapiFile");
-            File.Delete(OpenapiFile);
-        }
-        await File.WriteAllTextAsync(OpenapiFile, spec);
-
-        if (!Enum.TryParse<GenerationLanguage>(language, out var parsedLanguage))
-        {
-            throw new ArgumentOutOfRangeException($"Not supported language: {language}");
-        }
-
-        var generationConfiguration = new GenerationConfiguration
-        {
-            OpenAPIFilePath = OpenapiFile,
-            IncludePatterns = includePatterns?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(static x => x.Trim()).ToHashSet(),
-            ExcludePatterns = excludePatterns?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(static x => x.Trim()).ToHashSet(),
-            Language = parsedLanguage,
-            OutputPath = OutputPath,
-            ClientClassName = clientClassName,
-            ClientNamespaceName = namespaceName,
-            IncludeAdditionalData = false,
-            UsesBackingStore = false,
-            Serializers = defaultConfiguration.Serializers,
-            Deserializers = defaultConfiguration.Deserializers,
-            StructuredMimeTypes = defaultConfiguration.StructuredMimeTypes,
-            DisabledValidationRules = new(),
-            CleanOutput = true,
-            ClearCache = true,
-        };
-
-        try
-        {
-            var builder = new KiotaBuilder(consoleLogger, generationConfiguration, new HttpClient());
-            var result = await builder.GenerateClientAsync(token).ConfigureAwait(false);
-        }
-        catch (Exception e)
-        {
-            if (e.Message.Contains("Lock"))
+            if (File.Exists(OutputPath))
             {
-                Console.WriteLine("Problems during the Lock file write, ignoring", e);
+                Console.WriteLine("Deleting OutputPath");
+                File.Delete(OutputPath);
+            }
+            Directory.CreateDirectory(OutputPath);
+
+            string filename = "openapi.";
+            if (isJson(spec))
+            {
+                filename += "json";
             }
             else
             {
-                throw;
+                filename += "yaml";
             }
-        }
 
-        var zipFilePath = Path.Combine(Path.GetTempPath(), "kiota", "clients", hashedUrl, "client.zip");
-        if (File.Exists(zipFilePath))
-            File.Delete(zipFilePath);
-        else
-            Directory.CreateDirectory(Path.GetDirectoryName(zipFilePath)!);
+            string OpenapiFile = Path.Combine(Path.GetTempPath(), filename);
+            if (File.Exists(OpenapiFile))
+            {
+                Console.WriteLine("Deleting OpenapiFile");
+                File.Delete(OpenapiFile);
+            }
+            await File.WriteAllTextAsync(OpenapiFile, spec);
 
-        ZipFile.CreateFromDirectory(OutputPath, zipFilePath);
+            if (!Enum.TryParse<GenerationLanguage>(language, out var parsedLanguage))
+            {
+                throw new ArgumentOutOfRangeException($"Not supported language: {language}");
+            }
 
-        byte[] fileBytes = File.ReadAllBytes(zipFilePath);
-        string base64Content = System.Convert.ToBase64String(fileBytes);
-        return base64Content;
+            var generationConfiguration = new GenerationConfiguration
+            {
+                OpenAPIFilePath = OpenapiFile,
+                IncludePatterns = (includePatterns is null) ? new() : includePatterns?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(static x => x.Trim()).ToHashSet(),
+                ExcludePatterns = (excludePatterns is null) ? new() : excludePatterns?.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(static x => x.Trim()).ToHashSet(),
+                Language = parsedLanguage,
+                OutputPath = OutputPath,
+                ClientClassName = clientClassName,
+                ClientNamespaceName = namespaceName,
+                IncludeAdditionalData = false,
+                UsesBackingStore = false,
+                Serializers = defaultConfiguration.Serializers,
+                Deserializers = defaultConfiguration.Deserializers,
+                StructuredMimeTypes = defaultConfiguration.StructuredMimeTypes,
+                DisabledValidationRules = new(),
+                CleanOutput = true,
+                ClearCache = true,
+            };
+
+            try
+            {
+                var builder = new KiotaBuilder(consoleLogger, generationConfiguration, new HttpClient());
+                var result = await builder.GenerateClientAsync(token).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                if (e.Message.Contains("Lock"))
+                {
+                    Console.WriteLine("Problems during the Lock file write, ignoring", e);
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            var zipFilePath = Path.Combine(Path.GetTempPath(), "kiota", "clients", hashedUrl, "client.zip");
+            if (File.Exists(zipFilePath))
+                File.Delete(zipFilePath);
+            else
+                Directory.CreateDirectory(Path.GetDirectoryName(zipFilePath)!);
+
+            ZipFile.CreateFromDirectory(OutputPath, zipFilePath);
+
+            byte[] fileBytes = File.ReadAllBytes(zipFilePath);
+            string base64Content = System.Convert.ToBase64String(fileBytes);
+            return base64Content;
+        // } catch (Exception e)
+        // {
+        //     throw new Exception(cl.getAllLogs(), e);
+        // }
     }
 
     private static bool isJson(string str)
@@ -130,6 +138,7 @@ public partial class KiotaClientGen
 
 class ConsoleLogger : ILogger<KiotaBuilder>
 {
+    private StringBuilder sb = new StringBuilder();
     IDisposable ILogger.BeginScope<TState>(TState state)
     {
         return new DummyDisposable();
@@ -142,7 +151,13 @@ class ConsoleLogger : ILogger<KiotaBuilder>
 
     void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
     {
+        sb.AppendLine(formatter(state, exception));
         Console.WriteLine(formatter(state, exception));
+    }
+
+    public string getAllLogs()
+    {
+        return sb.ToString();
     }
 }
 
