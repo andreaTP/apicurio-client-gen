@@ -29,8 +29,8 @@ public partial class KiotaClientGen
         var cl = new ConsoleLogger();
         ILogger<KiotaBuilder> consoleLogger = cl;
 
-        // try
-        // {
+        try
+        {
             Console.WriteLine($"Starting to Generate with parameters: {language}, {clientClassName}, {namespaceName}");
 
             var defaultConfiguration = new GenerationConfiguration();
@@ -115,10 +115,10 @@ public partial class KiotaClientGen
             byte[] fileBytes = File.ReadAllBytes(zipFilePath);
             string base64Content = System.Convert.ToBase64String(fileBytes);
             return base64Content;
-        // } catch (Exception e)
-        // {
-        //     throw new Exception(cl.getAllLogs(), e);
-        // }
+        } catch (Exception e)
+        {
+            throw new Exception(cl.getAllLogs(), e);
+        }
     }
 
     private static bool isJson(string str)
