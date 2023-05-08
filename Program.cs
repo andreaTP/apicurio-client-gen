@@ -117,7 +117,8 @@ public partial class KiotaClientGen
             return base64Content;
         } catch (Exception e)
         {
-            throw new Exception(cl.getAllLogs(), e);
+            var errorMessage = "Error:\n" + e + "\nLogs:\n" + cl.GetAllLogs();
+            throw new Exception(errorMessage);
         }
     }
 
@@ -155,7 +156,7 @@ class ConsoleLogger : ILogger<KiotaBuilder>
         Console.WriteLine(formatter(state, exception));
     }
 
-    public string getAllLogs()
+    public string GetAllLogs()
     {
         return sb.ToString();
     }
