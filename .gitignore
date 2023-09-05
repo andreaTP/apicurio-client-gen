@@ -3,3 +3,4 @@ obj
 dist
 kiota
 node_modules
+.vscode
