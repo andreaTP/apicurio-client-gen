@@ -15,3 +15,16 @@ The main [Kiota project](https://github.com/microsoft/kiota) is supposed to be a
 ```bash
 dotnet build --configuration Release
 ```
+
+## Release
+
+This repository is released on tag:
+
+```
+git fetch origin
+git checkout origin/main
+git tag <version>
+git push origin <version>
+```
+
+and the CI will do the job.
