@@ -1,0 +1,27 @@
+image: mcr.microsoft.com/dotnet/sdk:7.0
+
+stages:
+  - release
+
+release-job:
+  tags:
+    - docker
+    - shared
+  rules:
+    - if: $CI_COMMIT_TAG
+  stage: release
+  script:
+    - dotnet workload install wasm-tools
+    - dotnet build --configuration Release
+    - tar -zcvf "apicurio-client-gen-dist-${CI_COMMIT_TAG}.tar.gz" ./dist
+    - ls -al
+    - echo "${APICURIO_KEYTAB}" | base64 --decode > apicurio.keytab
+    - apt-get update -qq
+    - export DEBIAN_FRONTEND=noninteractive
+    - apt-get install rsync krb5-user openssh-client -y
+    - mkdir -p ~/.ssh
+    - ssh-keyscan spmm-util.hosts.prod.psi.bos.redhat.com > ~/.ssh/known_hosts
+    - RB5_TRACE=/dev/stdout kinit -kt apicurio.keytab apicurio@IPA.REDHAT.COM
+    - klist
+    - rsync -v --list-only apicurio@spmm-util.hosts.prod.psi.bos.redhat.com:staging/integration/service-registry-dev/dist/ 
+    - rsync "apicurio-client-gen-dist-${CI_COMMIT_TAG}.tar.gz" -avz apicurio@spmm-util.hosts.prod.psi.bos.redhat.com:staging/integration/service-registry-dev/dist/
