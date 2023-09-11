@@ -20,7 +20,7 @@
     <!-- the published preview is throwing an error with KiotaLock -->
     <!-- <PackageReference Include="Microsoft.OpenApi.Kiota.Builder" Version="0.10.0-preview" /> -->
     <!-- <ProjectReference Include="..\kiota\src\Kiota.Builder\Kiota.Builder.csproj" /> -->
-    <PackageReference Include="Microsoft.OpenApi.Kiota.Builder" Version="1.5.1" />
+    <PackageReference Include="Microsoft.OpenApi.Kiota.Builder" Version="1.6.1" />
   </ItemGroup>
 
 </Project>
