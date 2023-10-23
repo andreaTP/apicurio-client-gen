@@ -4,3 +4,4 @@ dist
 kiota
 node_modules
 .vscode
+out

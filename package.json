@@ -1,0 +1,32 @@
+{
+  "name": "@andreatp/test-kiota-wasm",
+  "type": "module",
+  "version": "SNAPSHOT",
+  "description": "Thin layer on top of Kiota C# cli to be executed in a native WASM module.",
+  "main": "dist/main.js",
+  "files": [ "dist" ],
+  "scripts": {
+    "clean": "rm -rf bin obj dist node_modules",
+    "build": "dotnet build --configuration Release"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andreaTP/apicurio-client-gen.git"
+  },
+  "keywords": [
+    "kiota",
+    "openapi",
+    "codegen"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/andreaTP/apicurio-client-gen/issues"
+  },
+  "homepage": "https://github.com/andreaTP/apicurio-client-gen#readme",
+  "devDependencies": {
+    "@rollup/plugin-wasm": "^6.2.2",
+    "esbuild": "0.19.5",
+    "rollup": "^4.1.4",
+    "rollup-plugin-copy": "^3.5.0"
+  }
+}
