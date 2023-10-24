@@ -14,7 +14,9 @@ jobs:
         with:
           dotnet-version: 8.0.x
       - name: Install WASM tools
-        run: dotnet workload install wasm-tools
+        run: |
+          dotnet workload install wasm-tools
+          dotnet workload install wasm-experimental
       - name: Publish
         run: dotnet build --configuration Release
       - name: list
