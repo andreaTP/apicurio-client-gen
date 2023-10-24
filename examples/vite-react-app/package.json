@@ -8,20 +8,20 @@
     "build": "tsc && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "postinstall": "rm -rf ./public/kiota-wasm && copy-files-from-to"
+    "postinstall": "rimraf ./public/kiota-wasm && copy-files-from-to"
   },
   "copyFiles": [
     {
-        "from": "node_modules/@andreatp/test-kiota-wasm/dist/*",
-        "to": "public/kiota-wasm"
+      "from": "node_modules/@andreatp/test-kiota-wasm/dist/*",
+      "to": "public/kiota-wasm"
     },
     {
-        "from": "node_modules/@andreatp/test-kiota-wasm/dist/managed/*",
-        "to": "public/kiota-wasm/managed"
+      "from": "node_modules/@andreatp/test-kiota-wasm/dist/managed/*",
+      "to": "public/kiota-wasm/managed"
     },
     {
-        "from": "node_modules/@andreatp/test-kiota-wasm/dist/supportFiles/*",
-        "to": "public/kiota-wasm/supportFiles"
+      "from": "node_modules/@andreatp/test-kiota-wasm/dist/supportFiles/*",
+      "to": "public/kiota-wasm/supportFiles"
     }
   ],
   "dependencies": {
@@ -29,6 +29,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "@andreatp/test-kiota-wasm": "file:.yalc/@andreatp/test-kiota-wasm",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -38,8 +39,8 @@
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "rimraf": "^5.0.5",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5",
-    "@andreatp/test-kiota-wasm": "file:.yalc/@andreatp/test-kiota-wasm"
+    "vite": "^4.4.5"
   }
 }
