@@ -55,6 +55,8 @@ Copy the static assets coming from the kiota-wasm packge in `/public`, for examp
 Exclude the `kiota-wasm` folders from rollup:
 
 ```json
+{
+  ...
   build: {
     rollupOptions: {
       external: [
@@ -62,6 +64,7 @@ Exclude the `kiota-wasm` folders from rollup:
       ]
     }
   }
+}
 ```
 
 Now you can add the code using the wasm library to your app:
