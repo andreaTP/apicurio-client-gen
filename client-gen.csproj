@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <RuntimeIdentifier>browser-wasm</RuntimeIdentifier>
     <WasmMainJSPath>main.js</WasmMainJSPath>
     <OutputType>Exe</OutputType>
@@ -17,6 +17,19 @@
     <WasmExtraFilesToDeploy Include="package.json" />
     <WasmExtraFilesToDeploy Include="package-lock.json" />
   </ItemGroup>
+
+
+  <!-- FINIRE DI PROVARE QUESTO:
+  https://github.com/dotnet/runtime/issues/80807 -->
+
+  <!-- https://github.com/dotnet/runtime/issues/91558#issuecomment-1706989157 -->
+  <!-- EXPERIMENTS ... -->
+  <PropertyGroup>
+    <EmccEnvironment>web,worker</EmccEnvironment>
+  </PropertyGroup>
+  <PropertyGroup>
+    <WasmEnableWebcil>true</WasmEnableWebcil>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.OpenApi.Kiota.Builder" Version="1.7.0" />
