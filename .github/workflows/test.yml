@@ -5,19 +5,21 @@ on:
 
 jobs:
   release:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 7.0.x
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts'
       - name: Install WASM tools
         run: |
           dotnet workload install wasm-tools
           dotnet workload install wasm-experimental
-      - name: Publish
-        run: dotnet build --configuration Release
-      - name: list
-        run: ls -al ./dist
+      - name: Publish locally
+        run: npm ci && npm run clean && npm run build

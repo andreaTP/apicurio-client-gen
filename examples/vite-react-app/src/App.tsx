@@ -2,7 +2,7 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-// import { generate } from '@andreatp/test-kiota-wasm'
+// import { generate } from '@redhat-developer/kiota-wasm'
 // import mainUrl from './wasm-kiota/main.js?url'
 
 function App() {

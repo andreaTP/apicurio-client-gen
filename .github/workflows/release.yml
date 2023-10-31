@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   release:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,20 +22,17 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 'lts'
       - name: Install WASM tools
         run: dotnet workload install wasm-tools
       - name: Publish
-        working-directory: ./client-gen
-        run: dotnet build --configuration Release
-      - name: Compress
-        working-directory: ./client-gen
-        run: |
-          tar -zcvf dist.tar.gz ./dist
-          zip -r dist.zip ./dist
-      - name: Release
-        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844 # v1
-        with:
-          tag_name: ${{ github.ref_name }}
-          files: |
-            ./client-gen/dist.tar.gz
-            ./client-gen/dist.zip
+        run: npm ci && npm run clean && npm run build
+      - name: Set version in package.json
+        run: npm version ${{ github.event.inputs.release-version }}
+      - name: Publish to npmjs.com
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
