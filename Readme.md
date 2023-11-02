@@ -1,3 +1,7 @@
+# Deprecated
+
+Please checkout the successor: https://github.com/redhat-developer/kiota-wasm
+
 # Apicurio Client Generation
 
 This project uses [Kiota]((https://github.com/microsoft/kiota)) in the browser to generate client SDKs for OpenAPI specs.
